@@ -1,10 +1,11 @@
 from django.shortcuts import render,redirect
 from django.views import generic
 from .form import *
-from . form import DashboardForm
+from . form import DashboardForm,ConversionForm,UserRegistrationForm
 from.models import Homework,Todo
 from django.contrib import messages
 from youtubesearchpython import VideosSearch
+import wikipedia
 import requests
 # Create your views here.
 def dashboard_view(request):
@@ -352,7 +353,153 @@ def dictionary(request):
     
 
 
-def wikipedia(request):
-    form=DashboardForm()
-    context = {'form': form}
+def mywikipedia(request):
+    if request.method == 'POST':
+        text=request.POST['text']
+        form=DashboardForm(request.POST)
+        search = wikipedia.page(text)
+        context = {
+            'form': form,
+            'title': search.title,
+            'content': search.content,
+            'link': search.url,
+            'details': search.summary
+        }
+        return render(request, 'wiki.html', context)
+    else:
+
+        form=DashboardForm()
+        context = {'form': form}
     return render(request, 'wiki.html',context)
+
+
+""""""
+def conversion(request):
+
+    if request.method=='POST':
+        form=ConversionForm(request.POST)
+
+        if request.POST['measurement']=='length':
+            measurement_form=ConversionLengthForm()
+            context={'form': form,'m_form':measurement_form,'input':True}
+            if 'input' in request.POST:
+                first=request.POST['measure1']
+                second=request.POST['measure2']
+                input=request.POST['input']
+                answer=''
+                if input and int(input) >=0:
+                    if first =='yard' and second =='foot':
+                        answer= f'{input} yard ={int(input)*3} foot )'
+                    if first =='foot' and second =='yard':
+                        answer= f'{input} foot ={int(input)/3} yard )'
+
+
+                context={
+                    'form':form, 
+                         'm_form':measurement_form, 
+                         'input':True,
+                         'answer':answer}
+        
+        
+        if request.POST['measurement']=='mass':
+            measurement_form=ConversionMassForm()
+            context={'form': form,'m_form':measurement_form,'input':True}
+            if 'input' in request.POST:
+                first=request.POST['measure1']
+                second=request.POST['measure2']
+                input=request.POST['input']
+                answer=''
+                if input and int(input) >=0:
+                    if first =='pound' and second =='kilogram':
+                        answer= f'{input} pound ={int(input)*0.453592} kilogram )'
+                    if first =='kilogram' and second =='pound':
+                        answer= f'{input} kilogram ={int(input)*2.20462} pound )'
+
+
+                context={'form':form, 
+                         'm_form':measurement_form, 
+                         'input':True,
+                         'answer':answer},
+
+    
+
+
+    else:
+        form=ConversionForm()
+        context={'form': form,'input':False}
+
+    return render(request, 'conversion.html',context)
+
+""""""
+
+def conversion(request):
+    if request.method == 'POST':
+        form = ConversionForm(request.POST)
+
+        if request.POST['measurement'] == 'length':
+            measurement_form = ConversionLengthForm()
+            context = {'form': form, 'm_form': measurement_form, 'input': True}
+            if 'input' in request.POST:
+                first = request.POST['measure1']
+                second = request.POST['measure2']
+                input = request.POST['input']
+                answer = ''
+                if input and int(input) >= 0:
+                    if first == 'yard' and second == 'foot':
+                        answer = f'{input} yard = {int(input) * 3} foot'
+                    if first == 'foot' and second == 'yard':
+                        answer = f'{input} foot = {int(input) / 3} yard'
+
+                # Corrected context assignment
+                context = {
+                    'form': form,
+                    'm_form': measurement_form,
+                    'input': True,
+                    'answer': answer
+                }
+
+        if request.POST['measurement'] == 'mass':
+            measurement_form = ConversionMassForm()
+            context = {'form': form, 'm_form': measurement_form, 'input': True}
+            if 'input' in request.POST:
+                first = request.POST['measure1']
+                second = request.POST['measure2']
+                input = request.POST['input']
+                answer = ''
+                if input and int(input) >= 0:
+                    if first == 'pound' and second == 'kilogram':
+                        answer = f'{input} pound = {int(input) * 0.453592} kilogram'
+                    if first == 'kilogram' and second == 'pound':
+                        answer = f'{input} kilogram = {int(input) * 2.20462} pound'
+
+                # Corrected context assignment
+                context = {
+                    'form': form,
+                    'm_form': measurement_form,
+                    'input': True,
+                    'answer': answer
+                }
+
+    else:
+        form = ConversionForm()
+        context = {'form': form, 'input': False}
+
+    return render(request, 'conversion.html', context)
+
+
+def register(request):
+    if request.method == 'POST':
+        form=UserRegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username=form.cleaned_data.get('username')
+            messages.success(request, f'Account created for {username}!')
+            
+            return redirect('login')
+    else:   
+        form=UserRegistrationForm()
+    context={'form': form, }
+
+
+    return render(request,'register.html', context)
+
