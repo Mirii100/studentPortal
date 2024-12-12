@@ -42,3 +42,5 @@ class Todo(models.Model):
         return f'{self.user.username} Todo - {self.title} - {self.is_finished}'
 
 
+
+
