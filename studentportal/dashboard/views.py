@@ -503,3 +503,31 @@ def register(request):
 
     return render(request,'register.html', context)
 
+
+def profile(request):
+    homeworks=Homework.objects.filter(is_finised=False,user=request.user)
+    todos=Todo.objects.filter(is_finished=False,user=request.user)
+    if len(homeworks)==0:
+        homework_done=True
+    else:
+        homework_done=False
+    if len(todos)==0:
+        todos_done=True
+    else:
+        todos_done=False
+
+    context={
+        'homeworks': homeworks,
+        'todos': todos,
+        'homework_done': homework_done,
+        'todos_done': todos_done,
+        'homework_count': len(homeworks),
+        'todo_count': len(todos),
+        'homework_percentage': len(homeworks)/len(Homework.objects.all())*100 if len(Homework.objects.all())>0 else 0,
+        'todo_percentage': len(todos)/len(Todo.objects.all())*100 if len(Todo.objects.all())>0 else 0,
+    }
+
+    return render(request,'profile.html',context)
+
+
+

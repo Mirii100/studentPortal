@@ -1,0 +1,24 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{%block title%}
+logout user
+{%endblock%}
+
+
+{% block content %}
+
+<div class="border-top pt-3 text-center">
+  <h2>You are logged Out</h2>
+
+  <form method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Log Out</button>
+  </form>
+
+  <small class="text-muted"
+    ><a class="btn btn-danger" href="{% url 'login'%}">Log In Again</a>
+  </small>
+</div>
+
+{% endblock content %}
