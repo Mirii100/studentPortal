@@ -5,6 +5,7 @@ from . form import DashboardForm,ConversionForm,UserRegistrationForm
 from.models import Homework,Todo
 from django.contrib import messages
 from youtubesearchpython import VideosSearch
+from django.contrib.auth.decorators import login_required
 import wikipedia
 import requests
 # Create your views here.
@@ -12,6 +13,7 @@ def dashboard_view(request):
     return render(request,'home.html')
 
 
+@login_required
 def notes_view(request):
     if request.method=='POST':
         form=NotesForm(request.POST)
@@ -29,7 +31,7 @@ def notes_view(request):
     context={'notes':notes,'form':form}
     return render(request,'notes.html',context)
 
-
+@login_required
 def deleteNote(request,pk=None):
     Notes.objects.get(id=pk).delete()
 
@@ -42,7 +44,7 @@ class  NoteDetailView(generic.DetailView):
     
 
 
-
+@login_required
 def homework(request):
     if request.method=='POST':
         form=HomeworkForm(request.POST)
@@ -86,7 +88,7 @@ def homework(request):
 
     return render(request,'homework.html', context)
 
-
+@login_required
 def update_homework(request,pk=None):
     homework=Homework.objects.get(id=pk)
     if homework.is_finised():
@@ -98,12 +100,11 @@ def update_homework(request,pk=None):
     return redirect('homework')
 
 
-
+@login_required
 def delete_homework(request,pk=None):
     homework=Homework.objects.get(id=pk)
     homework.delete()
     return redirect('homework')
-
 
 
 
@@ -159,7 +160,7 @@ def myYoutube(request):
 
 
 
-
+@login_required
 def my_todo(request):
     if request.method=='POST':
         form=TodoForm(request.POST)
@@ -199,7 +200,7 @@ def my_todo(request):
                'todos_done':todos_done,} 
     return render(request, 'todo.html',context)
 
-
+@login_required
 def update_todo(request,pk=None):
     todo=Todo.objects.get(id=pk)
     if todo.is_finished==True:
@@ -210,7 +211,7 @@ def update_todo(request,pk=None):
     todo.save()
     return redirect('todo')
 
-
+@login_required
 def delete_todo(request,pk=None):
     todo=Todo.objects.get(id=pk)
     todo.delete()
@@ -503,7 +504,7 @@ def register(request):
 
     return render(request,'register.html', context)
 
-
+@login_required
 def profile(request):
     homeworks=Homework.objects.filter(is_finised=False,user=request.user)
     todos=Todo.objects.filter(is_finished=False,user=request.user)
@@ -531,3 +532,5 @@ def profile(request):
 
 
 
+ 
+ 
